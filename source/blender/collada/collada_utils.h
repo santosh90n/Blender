@@ -67,6 +67,7 @@ extern "C" {
 #include "collada_internal.h"
 
 typedef std::map<COLLADAFW::TextureMapId, std::vector<MTex *> > TexIndexTextureArrayMap;
+typedef std::set<Object *> BCObjectSet;
 
 extern Main *bc_get_main();
 extern EvaluationContext *bc_get_evaluation_context();
