@@ -50,11 +50,6 @@ extern "C" {
 static std::string EMPTY_STRING;
 static BCAnimationCurveMap BCEmptyAnimationCurves;
 
-BCAnimationSampler::BCAnimationSampler()
-{
-	// Nothing to do here
-}
-
 BCAnimationSampler::~BCAnimationSampler()
 {
 	BCAnimationObjectMap::iterator it;

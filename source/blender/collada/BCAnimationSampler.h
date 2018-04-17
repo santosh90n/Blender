@@ -156,7 +156,6 @@ private:
 
 public:
 
-	BCAnimationSampler();
 	~BCAnimationSampler();
 
 	void add_object(Object *ob);
