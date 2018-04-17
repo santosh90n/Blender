@@ -29,6 +29,7 @@
 #include <string>
 #include <map>
 #include <algorithm>
+#include "collada_utils.h"
 
 extern "C"
 {
@@ -39,8 +40,6 @@ extern "C"
 #include "DNA_lamp_types.h"
 #include "DNA_camera_types.h"
 }
-
-typedef float(Matrix)[4][4];
 
 class BCMatrix {
 
