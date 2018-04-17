@@ -156,10 +156,10 @@ private:
 
 public:
 
+	BCAnimationSampler(BCObjectSet &animated_subset);
 	~BCAnimationSampler();
 
 	void add_object(Object *ob);
-	void add_objects(BCObjectSet &animated_subset);
 
 	void sample_scene(Scene *scene,
 		int sampling_rate,

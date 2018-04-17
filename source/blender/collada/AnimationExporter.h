@@ -99,7 +99,6 @@ private:
 	EvaluationContext * eval_ctx;
 	Scene *scene;
 	COLLADASW::StreamWriter *sw;
-	BCAnimationSampler *animation_sampler;
 
 	std::vector<std::vector<std::string>> anim_meta;
 

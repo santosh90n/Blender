@@ -50,6 +50,15 @@ extern "C" {
 static std::string EMPTY_STRING;
 static BCAnimationCurveMap BCEmptyAnimationCurves;
 
+BCAnimationSampler::BCAnimationSampler(BCObjectSet &object_set)
+{
+	BCObjectSet::iterator it;
+	for (it = object_set.begin(); it != object_set.end(); ++it) {
+		Object *ob = *it;
+		add_object(ob);
+	}
+}
+
 BCAnimationSampler::~BCAnimationSampler()
 {
 	BCAnimationObjectMap::iterator it;
@@ -60,15 +69,6 @@ BCAnimationSampler::~BCAnimationSampler()
 		{
 			BKE_libblock_delete(bmain, &animation.reference->id); // is this the correct way to remove a temporary object ?
 		}
-	}
-}
-
-void BCAnimationSampler::add_objects(BCObjectSet &object_set)
-{
-	BCObjectSet::iterator it;
-	for (it = object_set.begin(); it != object_set.end(); ++it) {
-		Object *ob = *it;
-		add_object(ob);
 	}
 }
 
