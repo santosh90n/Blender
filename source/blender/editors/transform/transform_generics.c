@@ -847,7 +847,7 @@ static void recalcData_objects(TransInfo *t)
 							mul_qt_v3(qrot, up_axis);
 
 							/* roll has a tendency to flip in certain orientations - [#34283], [#33974] */
-							roll = ED_rollBoneToVector(ebo, up_axis, false);
+							roll = ED_armature_ebone_roll_to_vector(ebo, up_axis, false);
 							ebo->roll = angle_compat_rad(roll, td->ival);
 						}
 					}
@@ -856,7 +856,7 @@ static void recalcData_objects(TransInfo *t)
 			
 			if (arm->flag & ARM_MIRROR_EDIT) {
 				if (t->state != TRANS_CANCEL)
-					transform_armature_mirror_update(t->obedit);
+					ED_armature_edit_transform_mirror_update(t->obedit);
 				else
 					restoreBones(t);
 			}
@@ -1884,14 +1884,6 @@ void calculateCenter(TransInfo *t)
 	
 	if (t->spacetype == SPACE_VIEW3D) {
 		/* ED_view3d_calc_zfac() defines a factor for perspective depth correction, used in ED_view3d_win_to_delta() */
-		float vec[3];
-		if (t->flag & (T_EDIT | T_POSE)) {
-			Object *ob = t->obedit ? t->obedit : t->poseobj;
-			mul_v3_m4v3(vec, ob->obmat, t->center);
-		}
-		else {
-			copy_v3_v3(vec, t->center);
-		}
 
 		/* zfac is only used convertViewVec only in cases operator was invoked in RGN_TYPE_WINDOW
 		 * and never used in other cases.
@@ -1900,7 +1892,7 @@ void calculateCenter(TransInfo *t)
 		 * for a region different from RGN_TYPE_WINDOW.
 		 */
 		if (t->ar->regiontype == RGN_TYPE_WINDOW) {
-			t->zfac = ED_view3d_calc_zfac(t->ar->regiondata, vec, NULL);
+			t->zfac = ED_view3d_calc_zfac(t->ar->regiondata, t->center_global, NULL);
 		}
 		else {
 			t->zfac = 0.0f;

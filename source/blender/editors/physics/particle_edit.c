@@ -126,8 +126,6 @@ void PE_free_ptcache_edit(PTCacheEdit *edit)
 
 	if (edit==0) return;
 
-	PTCacheUndo_clear(edit);
-
 	if (edit->points) {
 		LOOP_POINTS {
 			if (point->keys)
@@ -1349,28 +1347,28 @@ static void toggle_key_select(PEData *data, int point_index, int key_index)
 static void select_action_apply(PTCacheEditPoint *point, PTCacheEditKey *key, int action)
 {
 	switch (action) {
-	case SEL_SELECT:
-		if ((key->flag & PEK_SELECT) == 0) {
-			key->flag |= PEK_SELECT;
-			point->flag |= PEP_EDIT_RECALC;
-		}
-		break;
-	case SEL_DESELECT:
-		if (key->flag & PEK_SELECT) {
-			key->flag &= ~PEK_SELECT;
-			point->flag |= PEP_EDIT_RECALC;
-		}
-		break;
-	case SEL_INVERT:
-		if ((key->flag & PEK_SELECT) == 0) {
-			key->flag |= PEK_SELECT;
-			point->flag |= PEP_EDIT_RECALC;
-		}
-		else {
-			key->flag &= ~PEK_SELECT;
-			point->flag |= PEP_EDIT_RECALC;
-		}
-		break;
+		case SEL_SELECT:
+			if ((key->flag & PEK_SELECT) == 0) {
+				key->flag |= PEK_SELECT;
+				point->flag |= PEP_EDIT_RECALC;
+			}
+			break;
+		case SEL_DESELECT:
+			if (key->flag & PEK_SELECT) {
+				key->flag &= ~PEK_SELECT;
+				point->flag |= PEP_EDIT_RECALC;
+			}
+			break;
+		case SEL_INVERT:
+			if ((key->flag & PEK_SELECT) == 0) {
+				key->flag |= PEK_SELECT;
+				point->flag |= PEP_EDIT_RECALC;
+			}
+			else {
+				key->flag &= ~PEK_SELECT;
+				point->flag |= PEP_EDIT_RECALC;
+			}
+			break;
 	}
 }
 
@@ -4379,9 +4377,6 @@ void PE_create_particle_edit(Scene *scene, Object *ob, PointCache *cache, Partic
 		if (psys && !cache)
 			recalc_emitter_field(ob, psys);
 		PE_update_object(scene, ob, 1);
-
-		PTCacheUndo_clear(edit);
-		PE_undo_push(scene, "Original");
 	}
 }
 

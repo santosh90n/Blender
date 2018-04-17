@@ -74,6 +74,7 @@
 #include "ED_screen_types.h"
 #include "ED_sequencer.h"
 #include "ED_util.h"
+#include "ED_undo.h"
 #include "ED_view3d.h"
 
 #include "RNA_access.h"
@@ -1740,6 +1741,7 @@ static void area_split_cancel(bContext *C, wmOperator *op)
 	sAreaSplitData *sd = (sAreaSplitData *)op->customdata;
 	
 	if (sd->previewmode) {
+		/* pass */
 	}
 	else {
 		if (screen_area_join(C, CTX_wm_screen(C), sd->sarea, sd->narea)) {
