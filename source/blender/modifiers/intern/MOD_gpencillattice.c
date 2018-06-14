@@ -56,7 +56,7 @@
 
 static void initData(ModifierData *md)
 {
-	LatticeGpencilModifierData *gpmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *gpmd = (LatticeGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->layername[0] = '\0';
 	gpmd->vgname[0] = '\0';
@@ -74,7 +74,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 	int vindex = defgroup_name_index(ob, mmd->vgname);
 	float weight = 1.0f;
 
@@ -110,7 +110,7 @@ static void gp_bakeModifier(
 		Main *bmain, Depsgraph *depsgraph,
         ModifierData *md, Object *ob)
 {
-	LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 	Scene *scene = md->scene;
 	struct LatticeDeformData *ldata = NULL;
 	bGPdata *gpd = ob->data;
@@ -151,7 +151,7 @@ static void gp_bakeModifier(
 
 static void freeData(ModifierData *md)
 {
-	LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 	struct LatticeDeformData *ldata = (struct LatticeDeformData *)mmd->cache_data;
 	/* free deform data */
 	if (ldata) {
@@ -161,14 +161,14 @@ static void freeData(ModifierData *md)
 
 static bool isDisabled(ModifierData *md, int UNUSED(userRenderParams))
 {
-	LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 
 	return !mmd->object;
 }
 
 static void updateDepsgraph(ModifierData *md, const ModifierUpdateDepsgraphContext *ctx) 
 {
-	LatticeGpencilModifierData *lmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *lmd = (LatticeGreasePencilModifierData *)md;
 	if (lmd->object != NULL) {
 		DEG_add_object_relation(ctx->node, lmd->object, DEG_OB_COMP_GEOMETRY, "Lattice Modifier");
 		DEG_add_object_relation(ctx->node, lmd->object, DEG_OB_COMP_TRANSFORM, "Lattice Modifier");
@@ -180,15 +180,15 @@ static void foreachObjectLink(
         ModifierData *md, Object *ob,
         ObjectWalkFunc walk, void *userData)
 {
-	LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+	LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 
 	walk(userData, ob, &mmd->object, IDWALK_CB_NOP);
 }
 
 ModifierTypeInfo modifierType_Gpencil_Lattice = {
 	/* name */              "Lattice",
-	/* structName */        "LatticeGpencilModifierData",
-	/* structSize */        sizeof(LatticeGpencilModifierData),
+	/* structName */        "LatticeGreasePencilModifierData",
+	/* structSize */        sizeof(LatticeGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_Single | eModifierTypeFlag_SupportsEditmode,
 

@@ -49,7 +49,7 @@
 
 static void initData(ModifierData *md)
 {
-	ThickGpencilModifierData *gpmd = (ThickGpencilModifierData *)md;
+	ThickGreasePencilModifierData *gpmd = (ThickGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->thickness = 0;
 	gpmd->layername[0] = '\0';
@@ -62,7 +62,7 @@ static void initData(ModifierData *md)
 
 static void freeData(ModifierData *md)
 {
-	ThickGpencilModifierData *gpmd = (ThickGpencilModifierData *)md;
+	ThickGreasePencilModifierData *gpmd = (ThickGreasePencilModifierData *)md;
 
 	if (gpmd->curve_thickness) {
 		curvemapping_free(gpmd->curve_thickness);
@@ -71,8 +71,8 @@ static void freeData(ModifierData *md)
 
 static void copyData(const ModifierData *md, ModifierData *target)
 {
-	ThickGpencilModifierData *gmd = (ThickGpencilModifierData *)md;
-	ThickGpencilModifierData *tgmd = (ThickGpencilModifierData *)target;
+	ThickGreasePencilModifierData *gmd = (ThickGreasePencilModifierData *)md;
+	ThickGreasePencilModifierData *tgmd = (ThickGreasePencilModifierData *)target;
 
 	if (tgmd->curve_thickness != NULL) {
 		curvemapping_free(tgmd->curve_thickness);
@@ -89,7 +89,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	ThickGpencilModifierData *mmd = (ThickGpencilModifierData *)md;
+	ThickGreasePencilModifierData *mmd = (ThickGreasePencilModifierData *)md;
 	int vindex = defgroup_name_index(ob, mmd->vgname);
 
 	if (!is_stroke_affected_by_modifier(ob, 
@@ -147,8 +147,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Thick = {
 	/* name */              "Thickness",
-	/* structName */        "ThickGpencilModifierData",
-	/* structSize */        sizeof(ThickGpencilModifierData),
+	/* structName */        "ThickGreasePencilModifierData",
+	/* structSize */        sizeof(ThickGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

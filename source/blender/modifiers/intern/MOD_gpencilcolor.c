@@ -53,7 +53,7 @@
 
 static void initData(ModifierData *md)
 {
-	ColorGpencilModifierData *gpmd = (ColorGpencilModifierData *)md;
+	ColorGreasePencilModifierData *gpmd = (ColorGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	ARRAY_SET_ITEMS(gpmd->hsv, 1.0f, 1.0f, 1.0f);
 	gpmd->layername[0] = '\0';
@@ -71,7 +71,7 @@ static void gp_deformStroke(
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
 
-	ColorGpencilModifierData *mmd = (ColorGpencilModifierData *)md;
+	ColorGreasePencilModifierData *mmd = (ColorGreasePencilModifierData *)md;
 	float hsv[3], factor[3];
 
 	if (!is_stroke_affected_by_modifier(ob,
@@ -99,7 +99,7 @@ static void gp_bakeModifier(
 		Main *bmain, Depsgraph *depsgraph,
         ModifierData *md, Object *ob)
 {
-	ColorGpencilModifierData *mmd = (ColorGpencilModifierData *)md;
+	ColorGreasePencilModifierData *mmd = (ColorGreasePencilModifierData *)md;
 	bGPdata *gpd = ob->data;
 
 	GHash *gh_color = BLI_ghash_str_new("GP_Color modifier");
@@ -154,8 +154,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Color = {
 	/* name */              "Hue/Saturation",
-	/* structName */        "ColorGpencilModifierData",
-	/* structSize */        sizeof(ColorGpencilModifierData),
+	/* structName */        "ColorGreasePencilModifierData",
+	/* structSize */        sizeof(ColorGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

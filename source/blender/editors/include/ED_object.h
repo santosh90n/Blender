@@ -256,6 +256,38 @@ bool ED_object_iter_other(
 
 bool ED_object_multires_update_totlevels_cb(struct Object *ob, void *totlevel_v);
 
+
+/* object_greasepencil_modifier.c */
+#ifdef TODO_GPENCIL_MODS
+
+struct GreasePencilModifierData *ED_object_greasepencil_modifier_add(
+        struct ReportList *reports, struct Main *bmain, struct Scene *scene,
+        struct Object *ob, const char *name, int type);
+bool ED_object_greasepencil_modifier_remove(
+        struct ReportList *reports, struct Main *bmain,
+        struct Object *ob, struct GreasePencilModifierData *md);
+void ED_object_greasepencil_modifier_clear(
+        struct Main *bmain, struct Object *ob);
+int ED_object_greasepencil_modifier_move_down(
+        struct ReportList *reports, struct Object *ob, struct GreasePencilModifierData *md);
+int ED_object_greasepencil_modifier_move_up(
+        struct ReportList *reports, struct Object *ob, struct GreasePencilModifierData *md);
+int ED_object_greasepencil_modifier_convert(
+        struct ReportList *reports, struct Main *bmain, struct Scene *scene,
+        struct ViewLayer *view_layer, struct Object *ob, struct GreasePencilModifierData *md);
+int ED_object_greasepencil_modifier_apply(
+        struct Main *bmain, struct ReportList *reports, struct Depsgraph *depsgraph, struct Scene *scene,
+        struct Object *ob, struct GreasePencilModifierData *md, int mode);
+int ED_object_greasepencil_modifier_copy(
+        struct ReportList *reports, struct Object *ob, struct GreasePencilModifierData *md);
+
+bool ED_object_iter_other(
+        struct Main *bmain, struct Object *orig_ob, const bool include_orig,
+        bool (*callback)(struct Object *ob, void *callback_data),
+        void *callback_data);
+#endif /* TODO_GPENCIL_MODS */
+
+
 /* object_select.c */
 void ED_object_select_linked_by_id(struct bContext *C, struct ID *id);
 

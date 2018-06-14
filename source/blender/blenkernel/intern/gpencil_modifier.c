@@ -40,6 +40,7 @@
 #include "DNA_scene_types.h"
 #include "DNA_object_types.h"
 #include "DNA_gpencil_types.h"
+#include "DNA_gpencil_modifier_types.h"
 #include "DNA_modifier_types.h"
 #include "DNA_vec_types.h"
 
@@ -319,7 +320,7 @@ void BKE_gpencil_lattice_init(Object *ob)
 	ModifierData *md;
 	for (md = ob->modifiers.first; md; md = md->next) {
 		if (md->type == eModifierType_Gpencil_Lattice) {
-			LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+			LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 			Object *latob = NULL;
 
 			latob = mmd->object;
@@ -342,7 +343,7 @@ void BKE_gpencil_lattice_clear(Object *ob)
 	ModifierData *md;
 	for (md = ob->modifiers.first; md; md = md->next) {
 		if (md->type == eModifierType_Gpencil_Lattice) {
-			LatticeGpencilModifierData *mmd = (LatticeGpencilModifierData *)md;
+			LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 			if ((mmd) && (mmd->cache_data)) {
 				end_latt_deform((struct LatticeDeformData *)mmd->cache_data);
 				mmd->cache_data = NULL;
@@ -450,3 +451,16 @@ void BKE_gpencil_eval_geometry(Depsgraph *depsgraph,
 
 
 /* *************************************************** */
+
+bool greasepencil_modifier_unique_name(ListBase *modifiers, GreasePencilModifierData *gmd)
+{
+#ifdef TODO_GPENCIL_MODS
+	if (modifiers && gmd) {
+		const GreasePencilModifierTypeInfo *gmti = greasepencil_modifierType_getInfo(gmd->type);
+		return BLI_uniquename(modifiers, gmd, DATA_(gmti->name), '.', offsetof(GreasePencilModifierData, name), sizeof(gmd->name));
+	}
+#else
+	UNUSED_VARS(modifiers, gmd);
+#endif /* TODO_GPENCIL_MODS */
+	return false;
+}

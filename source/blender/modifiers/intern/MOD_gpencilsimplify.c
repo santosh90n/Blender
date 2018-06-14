@@ -47,7 +47,7 @@
 
 static void initData(ModifierData *md)
 {
-	SimplifyGpencilModifierData *gpmd = (SimplifyGpencilModifierData *)md;
+	SimplifyGreasePencilModifierData *gpmd = (SimplifyGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->step = 1;
 	gpmd->factor = 0.0f;
@@ -63,7 +63,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	SimplifyGpencilModifierData *mmd = (SimplifyGpencilModifierData *)md;
+	SimplifyGreasePencilModifierData *mmd = (SimplifyGreasePencilModifierData *)md;
 	
 	if (!is_stroke_affected_by_modifier(ob,
 	        mmd->layername, mmd->pass_index, 4, gpl, gps,
@@ -100,8 +100,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Simplify = {
 	/* name */              "Simplify",
-	/* structName */        "SimplifyGpencilModifierData",
-	/* structSize */        sizeof(SimplifyGpencilModifierData),
+	/* structName */        "SimplifyGreasePencilModifierData",
+	/* structSize */        sizeof(SimplifyGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

@@ -52,7 +52,7 @@
 
 static void initData(ModifierData *md)
 {
-	BuildGpencilModifierData *gpmd = (BuildGpencilModifierData *)md;
+	BuildGreasePencilModifierData *gpmd = (BuildGreasePencilModifierData *)md;
 	
 	/* We deliberately set this range to the half the default
 	 * frame-range to have an immediate effect ot suggest use-cases
@@ -191,7 +191,7 @@ typedef struct tStrokeBuildDetails {
 
 
 /* Sequential - Show strokes one after the other */
-static void build_sequential(BuildGpencilModifierData *mmd, bGPDframe *gpf, float fac)
+static void build_sequential(BuildGreasePencilModifierData *mmd, bGPDframe *gpf, float fac)
 {
 	const size_t tot_strokes = BLI_listbase_count(&gpf->strokes);
 	bGPDstroke *gps;
@@ -294,7 +294,7 @@ static void build_sequential(BuildGpencilModifierData *mmd, bGPDframe *gpf, floa
 /* Concurrent - Show multiple strokes at once */
 // TODO: Allow random offsets to start times
 // TODO: Allow varying speeds? Scaling of progress?
-static void build_concurrent(BuildGpencilModifierData *mmd, bGPDframe *gpf, float fac)
+static void build_concurrent(BuildGreasePencilModifierData *mmd, bGPDframe *gpf, float fac)
 {
 	bGPDstroke *gps, *gps_next;
 	int max_points = 0;
@@ -404,7 +404,7 @@ static void gp_generateStrokes(
         ModifierData *md, Depsgraph *depsgraph,
         Object *UNUSED(ob), bGPDlayer *gpl, bGPDframe *gpf)
 {
-	BuildGpencilModifierData *mmd = (BuildGpencilModifierData *)md;
+	BuildGreasePencilModifierData *mmd = (BuildGreasePencilModifierData *)md;
 	const bool reverse = (mmd->transition != GP_BUILD_TRANSITION_GROW);
 	
 	const float ctime = DEG_get_ctime(depsgraph);
@@ -534,8 +534,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Build = {
 	/* name */              "Build",
-	/* structName */        "BuildGpencilModifierData",
-	/* structSize */        sizeof(BuildGpencilModifierData),
+	/* structName */        "BuildGreasePencilModifierData",
+	/* structSize */        sizeof(BuildGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod,
 

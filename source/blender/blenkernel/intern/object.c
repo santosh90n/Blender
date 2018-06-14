@@ -41,6 +41,7 @@
 #include "DNA_camera_types.h"
 #include "DNA_constraint_types.h"
 #include "DNA_gpencil_types.h"
+#include "DNA_gpencil_modifier_types.h"
 #include "DNA_group_types.h"
 #include "DNA_key_types.h"
 #include "DNA_lamp_types.h"
@@ -226,7 +227,7 @@ void BKE_object_modifier_hook_reset(Object *ob, HookModifierData *hmd)
 	}
 }
 
-void BKE_object_modifier_gpencil_hook_reset(Object *ob, HookGpencilModifierData *hmd)
+void BKE_object_modifier_gpencil_hook_reset(Object *ob, HookGreasePencilModifierData *hmd)
 {
 	if (hmd->object == NULL) {
 		return;

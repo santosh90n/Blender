@@ -46,7 +46,7 @@
 
 static void initData(ModifierData *md)
 {
-	SmoothGpencilModifierData *gpmd = (SmoothGpencilModifierData *)md;
+	SmoothGreasePencilModifierData *gpmd = (SmoothGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->flag |= GP_SMOOTH_MOD_LOCATION;
 	gpmd->factor = 0.5f;
@@ -65,7 +65,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	SmoothGpencilModifierData *mmd = (SmoothGpencilModifierData *)md;
+	SmoothGreasePencilModifierData *mmd = (SmoothGreasePencilModifierData *)md;
 	int vindex = defgroup_name_index(ob, mmd->vgname);
 	float weight = 1.0f;
 	float val;
@@ -129,8 +129,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Smooth = {
 	/* name */              "Smooth",
-	/* structName */        "SmoothGpencilModifierData",
-	/* structSize */        sizeof(SmoothGpencilModifierData),
+	/* structName */        "SmoothGreasePencilModifierData",
+	/* structSize */        sizeof(SmoothGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

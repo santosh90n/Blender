@@ -58,7 +58,7 @@
 
 static void initData(ModifierData *md)
 {
-	InstanceGpencilModifierData *gpmd = (InstanceGpencilModifierData *)md;
+	InstanceGreasePencilModifierData *gpmd = (InstanceGreasePencilModifierData *)md;
 	gpmd->count[0] = 1;
 	gpmd->count[1] = 1;
 	gpmd->count[2] = 1;
@@ -89,7 +89,7 @@ static void copyData(const ModifierData *md, ModifierData *target)
 /* -------------------------------- */
 
 /* helper function for per-instance positioning */
-void BKE_gpencil_instance_modifier_instance_tfm(InstanceGpencilModifierData *mmd, const int elem_idx[3], float r_mat[4][4])
+void BKE_gpencil_instance_modifier_instance_tfm(InstanceGreasePencilModifierData *mmd, const int elem_idx[3], float r_mat[4][4])
 {
 	float offset[3], rot[3], scale[3];
 	int ri = mmd->rnd[0];
@@ -137,7 +137,7 @@ static void generate_geometry(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDframe *gpf)
 {
-	InstanceGpencilModifierData *mmd = (InstanceGpencilModifierData *)md;
+	InstanceGreasePencilModifierData *mmd = (InstanceGreasePencilModifierData *)md;
 	ListBase stroke_cache = {NULL, NULL};
 	bGPDstroke *gps;
 	int idx;
@@ -274,7 +274,7 @@ static Object *array_instance_add_ob_copy(Main *bmain, Scene *scene, Object *fro
 /* gp_bakeModifier - "Make Objects" Mode */
 static void bakeModifierGP_objects(Main *bmain, ModifierData *md, Object *ob)
 {
-	InstanceGpencilModifierData *mmd = (InstanceGpencilModifierData *)md;
+	InstanceGreasePencilModifierData *mmd = (InstanceGreasePencilModifierData *)md;
 	Scene *scene = md->scene;
 	/* reset random */
 	mmd->rnd[0] = 1;
@@ -343,7 +343,7 @@ static void gp_generateStrokes(
         ModifierData *md, Depsgraph *depsgraph,
         Object *ob, bGPDlayer *gpl, bGPDframe *gpf)
 {
-	InstanceGpencilModifierData *mmd = (InstanceGpencilModifierData *)md;
+	InstanceGreasePencilModifierData *mmd = (InstanceGreasePencilModifierData *)md;
 	
 	/* When the "make_objects" flag is set, this modifier is handled as part of the 
 	 * draw engine instead. The main benefit is that the instances won't suffer from
@@ -363,7 +363,7 @@ static void gp_bakeModifier(
 		Main *bmain, Depsgraph *depsgraph,
         ModifierData *md, Object *ob)
 {
-	InstanceGpencilModifierData *mmd = (InstanceGpencilModifierData *)md;
+	InstanceGreasePencilModifierData *mmd = (InstanceGreasePencilModifierData *)md;
 	
 	/* Create new objects or add all to current datablock.
 	 * Sometimes it's useful to have the option to do either of these...
@@ -378,8 +378,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Instance = {
 	/* name */              "Instance",
-	/* structName */        "InstanceGpencilModifierData",
-	/* structSize */        sizeof(InstanceGpencilModifierData),
+	/* structName */        "InstanceGreasePencilModifierData",
+	/* structSize */        sizeof(InstanceGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

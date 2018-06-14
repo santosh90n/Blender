@@ -1238,7 +1238,7 @@ void DRW_gpencil_populate_datablock(GPENCIL_e_data *e_data, void *vedata, Scene 
 /* Helper for gpencil_instance_modifiers()
  * See also MOD_gpencilinstance.c -> gp_bakeModifier()
  */
-static void gp_instance_modifier_make_instances(GPENCIL_StorageList *stl, Object *ob, InstanceGpencilModifierData *mmd)
+static void gp_instance_modifier_make_instances(GPENCIL_StorageList *stl, Object *ob, InstanceGreasePencilModifierData *mmd)
 {
 	/* reset random */
 	mmd->rnd[0] = 1;
@@ -1302,7 +1302,7 @@ void gpencil_instance_modifiers(GPENCIL_StorageList *stl, Object *ob)
 		    ((md->mode & eModifierMode_Render) && (stl->storage->is_render == true)))
 		{
 			if (md->type == eModifierType_Gpencil_Instance) {
-				InstanceGpencilModifierData *mmd = (InstanceGpencilModifierData *)md;
+				InstanceGreasePencilModifierData *mmd = (InstanceGreasePencilModifierData *)md;
 
 				/* Only add instances if the "Make Objects" flag is set
 				 * FIXME: This is a workaround for z-ordering weirdness when all instances are in the same object

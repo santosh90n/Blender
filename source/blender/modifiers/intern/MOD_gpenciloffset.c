@@ -50,7 +50,7 @@
 
 static void initData(ModifierData *md)
 {
-	OffsetGpencilModifierData *gpmd = (OffsetGpencilModifierData *)md;
+	OffsetGreasePencilModifierData *gpmd = (OffsetGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->layername[0] = '\0';
 	gpmd->vgname[0] = '\0';
@@ -69,7 +69,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	OffsetGpencilModifierData *mmd = (OffsetGpencilModifierData *)md;
+	OffsetGreasePencilModifierData *mmd = (OffsetGreasePencilModifierData *)md;
 	int vindex = defgroup_name_index(ob, mmd->vgname);
 	
 	float mat[4][4];
@@ -119,8 +119,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Offset = {
 	/* name */              "Offset",
-	/* structName */        "OffsetGpencilModifierData",
-	/* structSize */        sizeof(OffsetGpencilModifierData),
+	/* structName */        "OffsetGreasePencilModifierData",
+	/* structSize */        sizeof(OffsetGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

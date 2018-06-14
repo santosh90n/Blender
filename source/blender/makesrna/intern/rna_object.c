@@ -1266,6 +1266,40 @@ bool rna_Object_modifiers_override_apply(
 	return true;
 }
 
+#ifdef TODO_GPENCIL_MODS
+static ModifierData *rna_Object_greasepencil_modifier_new(
+        Object *object, bContext *C, ReportList *reports,
+        const char *name, int type)
+{
+	return ED_object_greasepencil_modifier_add(reports, CTX_data_main(C), CTX_data_scene(C), object, name, type);
+}
+
+static void rna_Object_greasepencil_modifier_remove(
+        Object *object, bContext *C, ReportList *reports, PointerRNA *gmd_ptr)
+{
+	GreasePencilModifierData *gmd = gmd_ptr->data;
+	if (ED_object_greasepencil_modifier_remove(reports, CTX_data_main(C), object, gmd) == false) {
+		/* error is already set */
+		return;
+	}
+
+	RNA_POINTER_INVALIDATE(md_ptr);
+
+	WM_main_add_notifier(NC_OBJECT | ND_MODIFIER | NA_REMOVED, object);
+}
+
+#endif /* TODO_GPENCIL_MODS */
+
+static void rna_Object_greasepencil_modifier_clear(Object *object, bContext *C)
+{
+#ifdef TODO_GPENCIL_MODS
+	ED_object_greasepencil_modifier_clear(CTX_data_main(C), object);
+#else
+	UNUSED_VARS(C);
+#endif /* TODO_GPENCIL_MODS */
+	WM_main_add_notifier(NC_OBJECT | ND_MODIFIER | NA_REMOVED, object);
+}
+
 static void rna_Object_boundbox_get(PointerRNA *ptr, float *values)
 {
 	Object *ob = (Object *)ptr->id.data;
@@ -1709,6 +1743,49 @@ static void rna_def_object_modifiers(BlenderRNA *brna, PropertyRNA *cprop)
 	func = RNA_def_function(srna, "clear", "rna_Object_modifier_clear");
 	RNA_def_function_flag(func, FUNC_USE_CONTEXT);
 	RNA_def_function_ui_description(func, "Remove all modifiers from the object");
+}
+
+/* object.grease_pencil_modifiers */
+static void rna_def_object_grease_pencil_modifiers(BlenderRNA *brna, PropertyRNA *cprop)
+{
+	StructRNA *srna;
+
+	FunctionRNA *func;
+	PropertyRNA *parm;
+
+	RNA_def_property_srna(cprop, "ObjectGreasePencilModifiers");
+	srna = RNA_def_struct(brna, "ObjectGreasePencilModifiers", NULL);
+	RNA_def_struct_sdna(srna, "Object");
+	RNA_def_struct_ui_text(srna, "Object Grease Pencil Modifiers", "Collection of object grease pencil modifiers");
+
+#ifdef TODO_GPENCIL_MODS
+	/* add greasepencil modifier */
+	func = RNA_def_function(srna, "new", "rna_Object_greasepencil_modifier_new");
+	RNA_def_function_flag(func, FUNC_USE_CONTEXT | FUNC_USE_REPORTS);
+	RNA_def_function_ui_description(func, "Add a new greasepencil_modifier");
+	parm = RNA_def_string(func, "name", "Name", 0, "", "New name for the greasepencil_modifier");
+	RNA_def_parameter_flags(parm, 0, PARM_REQUIRED);
+	/* greasepencil_modifier to add */
+	parm = RNA_def_enum(func, "type", rna_enum_object_greasepencil_modifier_type_items, 1, "", "Modifier type to add");
+	RNA_def_parameter_flags(parm, 0, PARM_REQUIRED);
+	/* return type */
+	parm = RNA_def_pointer(func, "greasepencil_modifier", "GreasePencilModifier", "", "Newly created modifier");
+	RNA_def_function_return(func, parm);
+
+	/* remove greasepencil_modifier */
+	func = RNA_def_function(srna, "remove", "rna_Object_greasepencil_modifier_remove");
+	RNA_def_function_flag(func, FUNC_USE_CONTEXT | FUNC_USE_REPORTS);
+	RNA_def_function_ui_description(func, "Remove an existing greasepencil_modifier from the object");
+	/* greasepencil_modifier to remove */
+	parm = RNA_def_pointer(func, "greasepencil_modifier", "GreasePencilModifier", "", "Modifier to remove");
+	RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED | PARM_RNAPTR);
+	RNA_def_parameter_clear_flags(parm, PROP_THICK_WRAP, 0);
+
+#endif
+	/* clear all greasepencil modifiers */
+	func = RNA_def_function(srna, "clear", "rna_Object_greasepencil_modifier_clear");
+	RNA_def_function_flag(func, FUNC_USE_CONTEXT);
+	RNA_def_function_ui_description(func, "Remove all grease pencil modifiers from the object");
 }
 
 /* object.particle_systems */
@@ -2206,6 +2283,13 @@ static void rna_def_object(BlenderRNA *brna)
 	RNA_def_property_override_funcs(prop, NULL, NULL, "rna_Object_modifiers_override_apply");
 	RNA_def_property_override_flag(prop, PROPOVERRIDE_OVERRIDABLE_STATIC | PROPOVERRIDE_STATIC_INSERTION);
 	rna_def_object_modifiers(brna, prop);
+
+	/* Grease Pencil modifiers. */
+	prop = RNA_def_property(srna, "grease_pencil_modifiers", PROP_COLLECTION, PROP_NONE);
+	RNA_def_property_collection_sdna(prop, NULL, "greasepencil_modifiers", NULL);
+	RNA_def_property_struct_type(prop, "GreasePencilModifier");
+	RNA_def_property_ui_text(prop, "Grease Pencil Modifiers", "Modifiers affecting the data of the grease pencil object");
+	rna_def_object_grease_pencil_modifiers(brna, prop);
 
 	/* constraints */
 	prop = RNA_def_property(srna, "constraints", PROP_COLLECTION, PROP_NONE);

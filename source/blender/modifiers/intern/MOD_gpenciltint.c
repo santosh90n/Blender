@@ -52,7 +52,7 @@
 
 static void initData(ModifierData *md)
 {
-	TintGpencilModifierData *gpmd = (TintGpencilModifierData *)md;
+	TintGreasePencilModifierData *gpmd = (TintGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->factor = 0;
 	gpmd->layername[0] = '\0';
@@ -69,7 +69,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	TintGpencilModifierData *mmd = (TintGpencilModifierData *)md;
+	TintGreasePencilModifierData *mmd = (TintGreasePencilModifierData *)md;
 
 	if (!is_stroke_affected_by_modifier(ob,
 	        mmd->layername, mmd->pass_index, 1, gpl, gps,
@@ -106,7 +106,7 @@ static void gp_bakeModifier(
 		Main *bmain, Depsgraph *depsgraph,
         ModifierData *md, Object *ob)
 {
-	TintGpencilModifierData *mmd = (TintGpencilModifierData *)md;
+	TintGreasePencilModifierData *mmd = (TintGreasePencilModifierData *)md;
 	bGPdata *gpd = ob->data;
 
 	GHash *gh_color = BLI_ghash_str_new("GP_Tint modifier");
@@ -161,8 +161,8 @@ static void gp_bakeModifier(
 
 ModifierTypeInfo modifierType_Gpencil_Tint = {
 	/* name */              "Tint",
-	/* structName */        "TintGpencilModifierData",
-	/* structSize */        sizeof(TintGpencilModifierData),
+	/* structName */        "TintGreasePencilModifierData",
+	/* structSize */        sizeof(TintGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 

@@ -76,7 +76,7 @@ struct GPHookData_cb {
 
 static void initData(ModifierData *md)
 {
-	HookGpencilModifierData *gpmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *gpmd = (HookGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
 	gpmd->layername[0] = '\0';
 	gpmd->vgname[0] = '\0';
@@ -91,8 +91,8 @@ static void initData(ModifierData *md)
 
 static void copyData(const ModifierData *md, ModifierData *target)
 {
-	HookGpencilModifierData *gmd = (HookGpencilModifierData *)md;
-	HookGpencilModifierData *tgmd = (HookGpencilModifierData *)target;
+	HookGreasePencilModifierData *gmd = (HookGreasePencilModifierData *)md;
+	HookGreasePencilModifierData *tgmd = (HookGreasePencilModifierData *)target;
 
 	if (tgmd->curfalloff != NULL) {
 		curvemapping_free(tgmd->curfalloff);
@@ -193,7 +193,7 @@ static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	HookGpencilModifierData *mmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *mmd = (HookGreasePencilModifierData *)md;
 	if (!mmd->object) {
 		return;
 	}
@@ -263,7 +263,7 @@ static void gp_bakeModifier(
 		Main *bmain, Depsgraph *depsgraph,
         ModifierData *md, Object *ob)
 {
-	HookGpencilModifierData *mmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *mmd = (HookGreasePencilModifierData *)md;
 	Scene *scene = md->scene;
 	bGPdata *gpd = ob->data;
 	int oldframe = CFRA;
@@ -293,7 +293,7 @@ static void gp_bakeModifier(
 
 static void freeData(ModifierData *md)
 {
-	HookGpencilModifierData *mmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *mmd = (HookGreasePencilModifierData *)md;
 
 	if (mmd->curfalloff) {
 		curvemapping_free(mmd->curfalloff);
@@ -302,14 +302,14 @@ static void freeData(ModifierData *md)
 
 static bool isDisabled(ModifierData *md, int UNUSED(userRenderParams))
 {
-	HookGpencilModifierData *mmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *mmd = (HookGreasePencilModifierData *)md;
 
 	return !mmd->object;
 }
 
 static void updateDepsgraph(ModifierData *md, const ModifierUpdateDepsgraphContext *ctx)
 {
-	HookGpencilModifierData *lmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *lmd = (HookGreasePencilModifierData *)md;
 	if (lmd->object != NULL) {
 		DEG_add_object_relation(ctx->node, lmd->object, DEG_OB_COMP_GEOMETRY, "Hook Modifier");
 		DEG_add_object_relation(ctx->node, lmd->object, DEG_OB_COMP_TRANSFORM, "Hook Modifier");
@@ -321,15 +321,15 @@ static void foreachObjectLink(
         ModifierData *md, Object *ob,
         ObjectWalkFunc walk, void *userData)
 {
-	HookGpencilModifierData *mmd = (HookGpencilModifierData *)md;
+	HookGreasePencilModifierData *mmd = (HookGreasePencilModifierData *)md;
 
 	walk(userData, ob, &mmd->object, IDWALK_CB_NOP);
 }
 
 ModifierTypeInfo modifierType_Gpencil_Hook = {
 	/* name */              "Hook",
-	/* structName */        "HookGpencilModifierData",
-	/* structSize */        sizeof(HookGpencilModifierData),
+	/* structName */        "HookGreasePencilModifierData",
+	/* structSize */        sizeof(HookGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod,
 

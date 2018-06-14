@@ -33,6 +33,7 @@
 
 struct CurveMapping;
 struct Depsgraph;
+struct GreasePencilModifierData;
 struct ToolSettings;
 struct ListBase;
 struct bGPdata;
@@ -48,9 +49,9 @@ struct BoundBox;
 struct Brush;
 struct Object;
 struct bDeformGroup;
-struct SimplifyGpencilModifierData;
-struct InstanceGpencilModifierData;
-struct LatticeGpencilModifierData;
+struct SimplifyGreasePencilModifierData;
+struct InstanceGreasePencilModifierData;
+struct LatticeGreasePencilModifierData;
 
 struct MDeformVert;
 struct MDeformWeight;
@@ -172,7 +173,7 @@ void BKE_gpencil_geometry_modifiers(
 		struct Depsgraph *depsgraph, struct Object *ob, 
 		struct bGPDlayer *gpl, struct bGPDframe *gpf, bool is_render);
 
-void BKE_gpencil_instance_modifier_instance_tfm(struct InstanceGpencilModifierData *mmd, const int elem_idx[3], float r_mat[4][4]);
+void BKE_gpencil_instance_modifier_instance_tfm(struct InstanceGreasePencilModifierData *mmd, const int elem_idx[3], float r_mat[4][4]);
 
 void BKE_gpencil_lattice_init(struct Object *ob);
 void BKE_gpencil_lattice_clear(struct Object *ob);
@@ -191,5 +192,9 @@ bool BKE_gpencil_smooth_stroke_uv(struct bGPDstroke *gps, int point_index, float
 
 void BKE_gpencil_get_range_selected(struct bGPDlayer *gpl, int *r_initframe, int *r_endframe);
 float BKE_gpencil_multiframe_falloff_calc(struct bGPDframe *gpf, int actnum, int f_init, int f_end, struct CurveMapping *cur_falloff);
+
+/* modifiers */
+
+bool greasepencil_modifier_unique_name(struct ListBase *modifiers, struct GreasePencilModifierData *gmd);
 
 #endif /*  __BKE_GPENCIL_H__ */

@@ -50,7 +50,7 @@ struct Mesh;
 struct RigidBodyWorld;
 struct HookModifierData;
 struct ModifierData;
-struct HookGpencilModifierData;
+struct HookGreasePencilModifierData;
 
 #include "DNA_object_enums.h"
 
@@ -72,7 +72,7 @@ void BKE_object_free_derived_mesh_caches(struct Object *ob);
 void BKE_object_free_caches(struct Object *object);
 
 void BKE_object_modifier_hook_reset(struct Object *ob, struct HookModifierData *hmd);
-void BKE_object_modifier_gpencil_hook_reset(struct Object *ob, struct HookGpencilModifierData *hmd);
+void BKE_object_modifier_gpencil_hook_reset(struct Object *ob, struct HookGreasePencilModifierData *hmd);
 
 bool BKE_object_support_modifier_type_check(const struct Object *ob, int modifier_type);
 

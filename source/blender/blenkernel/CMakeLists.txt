@@ -114,7 +114,6 @@ set(SRC
 	intern/font.c
 	intern/freestyle.c
 	intern/gpencil.c
-	intern/gpencil_modifier.c
 	intern/icons.c
 	intern/icons_rasterize.c
 	intern/idcode.c
