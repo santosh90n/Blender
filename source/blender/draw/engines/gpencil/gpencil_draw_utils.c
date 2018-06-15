@@ -39,7 +39,7 @@
 #include "DNA_gpencil_types.h"
 #include "DNA_material_types.h"
 #include "DNA_view3d_types.h"
-#include "DNA_modifier_types.h"
+#include "DNA_gpencil_modifier_types.h"
 
  /* If builtin shaders are needed */
 #include "GPU_shader.h"
@@ -1297,9 +1297,9 @@ void gpencil_instance_modifiers(GPENCIL_StorageList *stl, Object *ob)
 		}
 	}
 
-	for (ModifierData *md = ob->modifiers.first; md; md = md->next) {
-		if (((md->mode & eModifierMode_Realtime) && (stl->storage->is_render == false)) ||
-		    ((md->mode & eModifierMode_Render) && (stl->storage->is_render == true)))
+	for (GreasePencilModifierData *md = ob->modifiers.first; md; md = md->next) {
+		if (((md->mode & eGreasePencilModifierMode_Realtime) && (stl->storage->is_render == false)) ||
+		    ((md->mode & eGreasePencilModifierMode_Render) && (stl->storage->is_render == true)))
 		{
 			if (md->type == eGreasePencilModifierType_Instance) {
 				InstanceGreasePencilModifierData *mmd = (InstanceGreasePencilModifierData *)md;

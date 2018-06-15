@@ -44,6 +44,7 @@
 
 #include "BKE_context.h"
 #include "BKE_gpencil.h"
+#include "BKE_gpencil_modifier.h"
 
 #include "DEG_depsgraph.h"
 #include "DEG_depsgraph_query.h"
@@ -538,7 +539,7 @@ ModifierTypeInfo modifierType_Gpencil_Build = {
 	/* structName */        "BuildGreasePencilModifierData",
 	/* structSize */        sizeof(BuildGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod,
 
 	/* copyData */          copyData,
 

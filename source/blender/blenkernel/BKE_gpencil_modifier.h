@@ -47,12 +47,13 @@ struct DepsNodeHandle;
 struct bGPDlayer;
 struct bGPDframe;
 struct bGPDstroke;
+struct ModifierUpdateDepsgraphContext;
 
 typedef enum {
-	eModifierTypeFlag_AcceptsMesh = (1 << 0),
-	eModifierTypeFlag_AcceptsCVs = (1 << 1),
-	eModifierTypeFlag_SupportsMapping = (1 << 2),
-	eModifierTypeFlag_SupportsEditmode = (1 << 3),
+	eGreasePencilModifierTypeFlag_AcceptsMesh = (1 << 0),
+	eGreasePencilModifierTypeFlag_AcceptsCVs = (1 << 1),
+	eGreasePencilModifierTypeFlag_SupportsMapping = (1 << 2),
+	eGreasePencilModifierTypeFlag_SupportsEditmode = (1 << 3),
 
 	/* For modifiers that support editmode this determines if the
 	* modifier should be enabled by default in editmode. This should
@@ -60,28 +61,28 @@ typedef enum {
 	* also generally used in editmode, otherwise let the user enable
 	* it by hand.
 	*/
-	eModifierTypeFlag_EnableInEditmode = (1 << 4),
+	eGreasePencilModifierTypeFlag_EnableInEditmode = (1 << 4),
 
 	/* For modifiers that require original data and so cannot
 	* be placed after any non-deformative modifier.
 	*/
-	eModifierTypeFlag_RequiresOriginalData = (1 << 5),
+	eGreasePencilModifierTypeFlag_RequiresOriginalData = (1 << 5),
 
 	/* For modifiers that support pointcache, so we can check to see if it has files we need to deal with
 	*/
-	eModifierTypeFlag_UsesPointCache = (1 << 6),
+	eGreasePencilModifierTypeFlag_UsesPointCache = (1 << 6),
 
 	/* For physics modifiers, max one per type */
-	eModifierTypeFlag_Single = (1 << 7),
+	eGreasePencilModifierTypeFlag_Single = (1 << 7),
 
 	/* Some modifier can't be added manually by user */
-	eModifierTypeFlag_NoUserAdd = (1 << 8),
+	eGreasePencilModifierTypeFlag_NoUserAdd = (1 << 8),
 
 	/* For modifiers that use CD_PREVIEW_MCOL for preview. */
-	eModifierTypeFlag_UsesPreview = (1 << 9),
-	eModifierTypeFlag_AcceptsLattice = (1 << 10),
+	eGreasePencilModifierTypeFlag_UsesPreview = (1 << 9),
+	eGreasePencilModifierTypeFlag_AcceptsLattice = (1 << 10),
 	/* Grease pencil modifiers (do not change mesh, only is placeholder) */
-	eModifierTypeFlag_GpencilMod = (1 << 11),
+	eGreasePencilModifierTypeFlag_GpencilMod = (1 << 11),
 } GreasePencilModifierTypeFlag;
 
 typedef struct GreasePencilModifierTypeInfo {
@@ -196,7 +197,7 @@ typedef struct GreasePencilModifierTypeInfo {
 	 * This function is optional.
 	 */
 	void (*updateDepsgraph)(struct GreasePencilModifierData *md,
-	                        const ModifierUpdateDepsgraphContext *ctx);
+	                        const struct ModifierUpdateDepsgraphContext *ctx);
  
 	/* Should return true if the modifier needs to be recalculated on time
 	 * changes.
@@ -250,11 +251,11 @@ typedef struct GreasePencilModifierTypeInfo {
 /* Initialize modifier's global data (type info and some common global storages). */
 void BKE_modifier_init(void);
 
-const GreasePencilModifierTypeInfo *modifierType_getInfo(GreasePencilModifierType type);
+const GreasePencilModifierTypeInfo *BKE_gpencil_modifierType_getInfo(GreasePencilModifierType type);
 
-struct GreasePencilModifierData  *modifier_new(int type);
-void          modifier_free_ex(struct GreasePencilModifierData *md, const int flag);
-void          modifier_free(struct GreasePencilModifierData *md);
+struct GreasePencilModifierData  *BKE_gpencil_modifier_new(int type);
+void          BKE_gpencil_modifier_free(struct GreasePencilModifierData *md);
 
-bool          greasepencil_modifier_unique_name(struct ListBase *modifiers, struct GreasePencilModifierData *gmd);
+bool          BKE_gpencil_modifier_unique_name(struct ListBase *modifiers, struct GreasePencilModifierData *gmd);
 
+#endif __BKE_GREASEPENCIL_H__

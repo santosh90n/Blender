@@ -124,8 +124,7 @@ static StructRNA *rna_GreasePencilModifier_refine(struct PointerRNA *ptr)
 {
 	GreasePencilModifierData *md = (GreasePencilModifierData *)ptr->data;
 
-	switch ((ModifierType)md->type) {
-#ifdef TODO_GPENCIL_MODS
+	switch ((GreasePencilModifierType)md->type) {
 		case eGreasePencilModifierType_Noise:
 			return &RNA_NoiseGreasePencilModifier;
 		case eGreasePencilModifierType_Subdiv:
@@ -152,7 +151,6 @@ static StructRNA *rna_GreasePencilModifier_refine(struct PointerRNA *ptr)
 			return &RNA_HookGreasePencilModifier;
 		case eGreasePencilModifierType_Offset:
 			return &RNA_OffsetGreasePencilModifier;
-#endif /* TODO_GPENCIL_MODS */
 			/* Default */
 		case eModifierType_None:
 		case NUM_GREASEPENCIL_MODIFIER_TYPES:
@@ -176,7 +174,7 @@ static void rna_GreasePencilModifier_name_set(PointerRNA *ptr, const char *value
 	/* make sure the name is truly unique */
 	if (ptr->id.data) {
 		Object *ob = ptr->id.data;
-		greasepencil_modifier_unique_name(&ob->greasepencil_modifiers, gmd);
+		gpencil_modifier_unique_name(&ob->greasepencil_modifiers, gmd);
 	}
 
 	/* fix all the animation data which may link to this */

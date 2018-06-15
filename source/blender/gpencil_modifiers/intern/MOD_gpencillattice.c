@@ -41,6 +41,7 @@
 #include "BKE_context.h"
 #include "BKE_deform.h"
 #include "BKE_gpencil.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_lattice.h"
 #include "BKE_library_query.h"
 #include "BKE_scene.h"
@@ -191,7 +192,7 @@ ModifierTypeInfo modifierType_Gpencil_Lattice = {
 	/* structName */        "LatticeGreasePencilModifierData",
 	/* structSize */        sizeof(LatticeGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_Single | eModifierTypeFlag_SupportsEditmode,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod | eGreasePencilModifierTypeFlag_Single | eGreasePencilModifierTypeFlag_SupportsEditmode,
 
 	/* copyData */          copyData,
 

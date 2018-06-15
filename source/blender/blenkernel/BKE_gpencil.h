@@ -195,6 +195,6 @@ float BKE_gpencil_multiframe_falloff_calc(struct bGPDframe *gpf, int actnum, int
 
 /* modifiers */
 
-bool greasepencil_modifier_unique_name(struct ListBase *modifiers, struct GreasePencilModifierData *gmd);
+bool gpencil_modifier_unique_name(struct ListBase *modifiers, struct GreasePencilModifierData *gmd);
 
 #endif /*  __BKE_GPENCIL_H__ */

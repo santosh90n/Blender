@@ -44,6 +44,7 @@
 #include "BKE_global.h"
 #include "BKE_context.h"
 #include "BKE_gpencil.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_main.h"
 #include "BKE_material.h"
 
@@ -158,7 +159,7 @@ ModifierTypeInfo modifierType_Gpencil_Color = {
 	/* structName */        "ColorGreasePencilModifierData",
 	/* structSize */        sizeof(ColorGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod | eGreasePencilModifierTypeFlag_SupportsEditmode,
 
 	/* copyData */          copyData,
 

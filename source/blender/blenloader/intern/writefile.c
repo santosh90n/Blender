@@ -1773,7 +1773,7 @@ static void write_gpencil_modifiers(WriteData *wd, ListBase *modbase)
 	}
 
 	for (md = modbase->first; md; md = md->next) {
-		const GreasePencilModifierTypeInfo *mti = modifierType_getInfo(md->type);
+		const GreasePencilModifierTypeInfo *mti = BKE_gpencil_modifierType_getInfo(md->type);
 		if (mti == NULL) {
 			return;
 		}

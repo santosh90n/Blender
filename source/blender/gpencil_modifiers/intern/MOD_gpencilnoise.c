@@ -45,7 +45,7 @@
 #include "BKE_global.h"
 #include "BKE_deform.h"
 #include "BKE_gpencil.h"
-#include "BKE_modifier.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_object.h"
 
 #include "DEG_depsgraph.h"
@@ -245,7 +245,7 @@ ModifierTypeInfo modifierType_Gpencil_Noise = {
 	/* structName */        "NoiseGreasePencilModifierData",
 	/* structSize */        sizeof(NoiseGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod | eGreasePencilModifierTypeFlag_SupportsEditmode,
 
 	/* copyData */          copyData,
 

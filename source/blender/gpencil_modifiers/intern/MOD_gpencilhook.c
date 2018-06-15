@@ -44,6 +44,7 @@
 #include "BKE_colortools.h"
 #include "BKE_deform.h"
 #include "BKE_gpencil.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_library_query.h"
 #include "BKE_scene.h"
 #include "BKE_main.h"
@@ -332,7 +333,7 @@ ModifierTypeInfo modifierType_Gpencil_Hook = {
 	/* structName */        "HookGreasePencilModifierData",
 	/* structSize */        sizeof(HookGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod,
 
 	/* copyData */          copyData,
 

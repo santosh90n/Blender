@@ -38,6 +38,7 @@
 #include "BKE_context.h"
 #include "BKE_deform.h"
 #include "BKE_gpencil.h"
+#include "BKE_gpencil_modifier.h"
 
 #include "DEG_depsgraph.h"
 
@@ -132,7 +133,7 @@ ModifierTypeInfo modifierType_Gpencil_Smooth = {
 	/* structName */        "SmoothGreasePencilModifierData",
 	/* structSize */        sizeof(SmoothGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod | eGreasePencilModifierTypeFlag_SupportsEditmode,
 
 	/* copyData */          copyData,
 

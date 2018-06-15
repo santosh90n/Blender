@@ -47,7 +47,7 @@
 #include "BKE_global.h"
 #include "BKE_gpencil.h"
 #include "BKE_lattice.h"
-#include "BKE_modifier.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_object.h"
 
 #include "DEG_depsgraph.h"
@@ -317,9 +317,9 @@ void BKE_gpencil_simplify_fixed(bGPDstroke *gps)
 /* init lattice deform data */
 void BKE_gpencil_lattice_init(Object *ob)
 {
-	ModifierData *md;
+	GreasePencilModifierData *md;
 	for (md = ob->modifiers.first; md; md = md->next) {
-		if (md->type == eModifierType_Gpencil_Lattice) {
+		if (md->type == eGreasePencilModifierType_Lattice) {
 			LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 			Object *latob = NULL;
 
@@ -340,9 +340,9 @@ void BKE_gpencil_lattice_init(Object *ob)
 /* clear lattice deform data */
 void BKE_gpencil_lattice_clear(Object *ob)
 {
-	ModifierData *md;
+	GreasePencilModifierData *md;
 	for (md = ob->modifiers.first; md; md = md->next) {
-		if (md->type == eModifierType_Gpencil_Lattice) {
+		if (md->type == eGreasePencilModifierType_Lattice) {
 			LatticeGreasePencilModifierData *mmd = (LatticeGreasePencilModifierData *)md;
 			if ((mmd) && (mmd->cache_data)) {
 				end_latt_deform((struct LatticeDeformData *)mmd->cache_data);
@@ -358,9 +358,9 @@ void BKE_gpencil_lattice_clear(Object *ob)
 /* check if exist geometry modifiers */
 bool BKE_gpencil_has_geometry_modifiers(Object *ob)
 {
-	ModifierData *md;
+	GreasePencilModifierData *md;
 	for (md = ob->modifiers.first; md; md = md->next) {
-		const ModifierTypeInfo *mti = modifierType_getInfo(md->type);
+		const GreasePencilModifierTypeInfo *mti = BKE_gpencil_modifierType_getInfo(md->type);
 		
 		if (mti && mti->gp_generateStrokes) {
 			return true;
@@ -372,14 +372,14 @@ bool BKE_gpencil_has_geometry_modifiers(Object *ob)
 /* apply stroke modifiers */
 void BKE_gpencil_stroke_modifiers(Depsgraph *depsgraph, Object *ob, bGPDlayer *gpl, bGPDframe *UNUSED(gpf), bGPDstroke *gps, bool is_render)
 {
-	ModifierData *md;
+	GreasePencilModifierData *md;
 	bGPdata *gpd = ob->data;
 	const bool is_edit = GPENCIL_ANY_EDIT_MODE(gpd);
 	
 	for (md = ob->modifiers.first; md; md = md->next) {
 		if (GPENCIL_MODIFIER_ACTIVE(md, is_render))
 		{
-			const ModifierTypeInfo *mti = modifierType_getInfo(md->type);
+			const GreasePencilModifierTypeInfo *mti = BKE_gpencil_modifierType_getInfo(md->type);
 			
 			if (GPENCIL_MODIFIER_EDIT(md, is_edit)) {
 				continue;
@@ -395,14 +395,14 @@ void BKE_gpencil_stroke_modifiers(Depsgraph *depsgraph, Object *ob, bGPDlayer *g
 /* apply stroke geometry modifiers */
 void BKE_gpencil_geometry_modifiers(Depsgraph *depsgraph, Object *ob, bGPDlayer *gpl, bGPDframe *gpf, bool is_render)
 {
-	ModifierData *md;
+	GreasePencilModifierData *md;
 	bGPdata *gpd = ob->data;
 	const bool is_edit = GPENCIL_ANY_EDIT_MODE(gpd);
 
 	for (md = ob->modifiers.first; md; md = md->next) {
 		if (GPENCIL_MODIFIER_ACTIVE(md, is_render))
 		{
-			const ModifierTypeInfo *mti = modifierType_getInfo(md->type);
+			const GreasePencilModifierTypeInfo *mti = BKE_gpencil_modifierType_getInfo(md->type);
 			
 			if (GPENCIL_MODIFIER_EDIT(md, is_edit)) {
 				continue;
@@ -452,15 +452,11 @@ void BKE_gpencil_eval_geometry(Depsgraph *depsgraph,
 
 /* *************************************************** */
 
-bool greasepencil_modifier_unique_name(ListBase *modifiers, GreasePencilModifierData *gmd)
+bool gpencil_modifier_unique_name(ListBase *modifiers, GreasePencilModifierData *gmd)
 {
-#ifdef TODO_GPENCIL_MODS
 	if (modifiers && gmd) {
-		const GreasePencilModifierTypeInfo *gmti = greasepencil_modifierType_getInfo(gmd->type);
+		const GreasePencilModifierTypeInfo *gmti = BKE_gpencil_modifierType_getInfo(gmd->type);
 		return BLI_uniquename(modifiers, gmd, DATA_(gmti->name), '.', offsetof(GreasePencilModifierData, name), sizeof(gmd->name));
 	}
-#else
-	UNUSED_VARS(modifiers, gmd);
-#endif /* TODO_GPENCIL_MODS */
 	return false;
 }

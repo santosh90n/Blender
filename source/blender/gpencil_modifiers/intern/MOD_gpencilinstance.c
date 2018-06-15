@@ -43,6 +43,7 @@
 #include "BLI_utildefines.h"
 
 #include "BKE_gpencil.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_context.h"
 #include "BKE_global.h"
 #include "BKE_object.h"
@@ -382,7 +383,7 @@ ModifierTypeInfo modifierType_Gpencil_Instance = {
 	/* structName */        "InstanceGreasePencilModifierData",
 	/* structSize */        sizeof(InstanceGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
-	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
+	/* flags */             eGreasePencilModifierTypeFlag_GpencilMod | eGreasePencilModifierTypeFlag_SupportsEditmode,
 
 	/* copyData */          copyData,
 
