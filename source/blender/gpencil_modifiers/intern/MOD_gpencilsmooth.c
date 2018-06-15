@@ -33,7 +33,7 @@
 #include "DNA_meshdata_types.h"
 #include "DNA_object_types.h"
 #include "DNA_gpencil_types.h"
-#include "DNA_modifier_types.h"
+#include "DNA_gpencil_modifier_types.h"
 
 #include "BKE_context.h"
 #include "BKE_deform.h"

@@ -72,6 +72,7 @@
 #include "DNA_genfile.h"
 #include "DNA_group_types.h"
 #include "DNA_gpencil_types.h"
+#include "DNA_gpencil_modifier_types.h"
 #include "DNA_ipo_types.h"
 #include "DNA_key_types.h"
 #include "DNA_lattice_types.h"
@@ -5385,11 +5386,28 @@ static void direct_link_modifiers(FileData *fd, ListBase *lb)
 				}
 			}
 		}
-		else if (md->type == eModifierType_Gpencil_Lattice) {
+	}
+}
+
+static void direct_link_gpencil_modifiers(FileData *fd, ListBase *lb)
+{
+	GreasePencilModifierData *md;
+
+	link_list(fd, lb);
+
+	for (md = lb->first; md; md = md->next) {
+		md->error = NULL;
+		md->scene = NULL;
+
+		/* if modifiers disappear, or for upward compatibility */
+		if (NULL == modifierType_getInfo(md->type))
+			md->type = eModifierType_None;
+
+		if (md->type == eGreasePencilModifierType_Lattice) {
 			LatticeGreasePencilModifierData *gpmd = (LatticeGreasePencilModifierData*)md;
 			gpmd->cache_data = NULL;
 		}
-		else if (md->type == eModifierType_Gpencil_Hook) {
+		else if (md->type == eGreasePencilModifierType_Hook) {
 			HookGreasePencilModifierData *hmd = (HookGreasePencilModifierData *)md;
 
 			hmd->curfalloff = newdataadr(fd, hmd->curfalloff);
@@ -5397,7 +5415,7 @@ static void direct_link_modifiers(FileData *fd, ListBase *lb)
 				direct_link_curvemapping(fd, hmd->curfalloff);
 			}
 		}
-		else if (md->type == eModifierType_Gpencil_Thick) {
+		else if (md->type == eGreasePencilModifierType_Thick) {
 			ThickGreasePencilModifierData *gpmd = (ThickGreasePencilModifierData *)md;
 
 			gpmd->curve_thickness = newdataadr(fd, gpmd->curve_thickness);
@@ -5454,7 +5472,8 @@ static void direct_link_object(FileData *fd, Object *ob)
 	
 	/* do it here, below old data gets converted */
 	direct_link_modifiers(fd, &ob->modifiers);
-	
+	direct_link_gpencil_modifiers(fd, &ob->greasepencil_modifiers);
+
 	link_list(fd, &ob->effect);
 	paf= ob->effect.first;
 	while (paf) {

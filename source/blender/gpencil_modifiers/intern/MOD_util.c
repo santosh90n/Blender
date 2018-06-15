@@ -35,7 +35,7 @@
 #include "DNA_image_types.h"
 #include "DNA_meshdata_types.h"
 #include "DNA_mesh_types.h"
-#include "DNA_modifier_types.h"
+#include "DNA_gpencil_modifier_types.h"
 #include "DNA_object_types.h"
 #include "DNA_scene_types.h"
 
@@ -46,6 +46,7 @@
 #include "BKE_cdderivedmesh.h"
 #include "BKE_deform.h"
 #include "BKE_editmesh.h"
+#include "BKE_gpencil_modifier.h"
 #include "BKE_image.h"
 #include "BKE_lattice.h"
 #include "BKE_library.h"
@@ -387,63 +388,21 @@ void modifier_get_vgroup_mesh(Object *ob, struct Mesh *mesh, const char *name, M
 }
 
 
-/* only called by BKE_modifier.h/modifier.c */
-void modifier_type_init(ModifierTypeInfo *types[])
+void modifier_type_init(GreasePencilModifierTypeInfo *types[])
 {
-#define INIT_TYPE(typeName) (types[eModifierType_##typeName] = &modifierType_##typeName)
-	INIT_TYPE(None);
-	INIT_TYPE(Curve);
-	INIT_TYPE(Lattice);
-	INIT_TYPE(Subsurf);
-	INIT_TYPE(Build);
-	INIT_TYPE(Array);
-	INIT_TYPE(Mirror);
-	INIT_TYPE(EdgeSplit);
-	INIT_TYPE(Bevel);
-	INIT_TYPE(Displace);
-	INIT_TYPE(UVProject);
-	INIT_TYPE(Decimate);
-	INIT_TYPE(Smooth);
-	INIT_TYPE(Cast);
-	INIT_TYPE(Wave);
-	INIT_TYPE(Armature);
-	INIT_TYPE(Hook);
-	INIT_TYPE(Softbody);
-	INIT_TYPE(Cloth);
-	INIT_TYPE(Collision);
-	INIT_TYPE(Boolean);
-	INIT_TYPE(MeshDeform);
-	INIT_TYPE(Ocean);
-	INIT_TYPE(ParticleSystem);
-	INIT_TYPE(ParticleInstance);
-	INIT_TYPE(Explode);
-	INIT_TYPE(Shrinkwrap);
-	INIT_TYPE(Fluidsim);
-	INIT_TYPE(Mask);
-	INIT_TYPE(SimpleDeform);
-	INIT_TYPE(Multires);
-	INIT_TYPE(Surface);
-	INIT_TYPE(Smoke);
-	INIT_TYPE(ShapeKey);
-	INIT_TYPE(Solidify);
-	INIT_TYPE(Screw);
-	INIT_TYPE(Warp);
-	INIT_TYPE(WeightVGEdit);
-	INIT_TYPE(WeightVGMix);
-	INIT_TYPE(WeightVGProximity);
-	INIT_TYPE(DynamicPaint);
-	INIT_TYPE(Remesh);
-	INIT_TYPE(Skin);
-	INIT_TYPE(LaplacianSmooth);
-	INIT_TYPE(Triangulate);
-	INIT_TYPE(UVWarp);
-	INIT_TYPE(MeshCache);
-	INIT_TYPE(LaplacianDeform);
-	INIT_TYPE(Wireframe);
-	INIT_TYPE(DataTransfer);
-	INIT_TYPE(NormalEdit);
-	INIT_TYPE(CorrectiveSmooth);
-	INIT_TYPE(MeshSequenceCache);
-	INIT_TYPE(SurfaceDeform);
+#define INIT_TYPE(typeName) (types[eGreasePencilModifierType_##typeName] = &modifierType_##typeName)
+	INIT_TYPE(Noise);
+	INIT_TYPE(Subdiv);
+	INIT_TYPE(Simplify);
+	INIT_TYPE(Gpencil_Thick);
+	INIT_TYPE(Gpencil_Tint);
+	INIT_TYPE(Gpencil_Color);
+	INIT_TYPE(Gpencil_Instance);
+	INIT_TYPE(Gpencil_Build);
+	INIT_TYPE(Gpencil_Opacity);
+	INIT_TYPE(Gpencil_Lattice);
+	INIT_TYPE(Gpencil_Smooth);
+	INIT_TYPE(Gpencil_Hook);
+	INIT_TYPE(Gpencil_Offset);
 #undef INIT_TYPE
 }

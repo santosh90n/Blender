@@ -24,24 +24,26 @@
  *
  */
 
-/** \file blender/modifiers/intern/MOD_gpenciloffset.c
+/** \file blender/modifiers/intern/MOD_gpencilopacity.c
  *  \ingroup modifiers
  */
 
 #include <stdio.h>
 
+#include "BLI_blenlib.h"
+#include "BLI_utildefines.h"
+
 #include "DNA_meshdata_types.h"
 #include "DNA_scene_types.h"
 #include "DNA_object_types.h"
 #include "DNA_gpencil_types.h"
+#include "DNA_gpencil_modifier_types.h"
 
-#include "BLI_utildefines.h"
-#include "BLI_math.h"
-
-#include "BKE_colortools.h"
 #include "BKE_context.h"
 #include "BKE_deform.h"
+#include "BKE_material.h"
 #include "BKE_gpencil.h"
+#include "BKE_modifier.h"
 
 #include "DEG_depsgraph.h"
 
@@ -50,13 +52,11 @@
 
 static void initData(ModifierData *md)
 {
-	OffsetGreasePencilModifierData *gpmd = (OffsetGreasePencilModifierData *)md;
+	OpacityGreasePencilModifierData *gpmd = (OpacityGreasePencilModifierData *)md;
 	gpmd->pass_index = 0;
+	gpmd->factor = 1.0f;
 	gpmd->layername[0] = '\0';
 	gpmd->vgname[0] = '\0';
-	ARRAY_SET_ITEMS(gpmd->loc, 0.0f, 0.0f, 0.0f);
-	ARRAY_SET_ITEMS(gpmd->rot, 0.0f, 0.0f, 0.0f);
-	ARRAY_SET_ITEMS(gpmd->scale, 0.0f, 0.0f, 0.0f);
 }
 
 static void copyData(const ModifierData *md, ModifierData *target)
@@ -64,42 +64,72 @@ static void copyData(const ModifierData *md, ModifierData *target)
 	modifier_copyData_generic(md, target);
 }
 
-/* change stroke offsetness */
+/* opacity strokes */
 static void gp_deformStroke(
         ModifierData *md, Depsgraph *UNUSED(depsgraph),
         Object *ob, bGPDlayer *gpl, bGPDstroke *gps)
 {
-	OffsetGreasePencilModifierData *mmd = (OffsetGreasePencilModifierData *)md;
+	OpacityGreasePencilModifierData *mmd = (OpacityGreasePencilModifierData *)md;
+	MaterialGPencilStyle *gp_style = BKE_material_gpencil_settings_get(ob, gps->mat_nr + 1);
 	int vindex = defgroup_name_index(ob, mmd->vgname);
-	
-	float mat[4][4];
-	float loc[3], rot[3], scale[3];
 
-	if (!is_stroke_affected_by_modifier(ob,
-	        mmd->layername, mmd->pass_index, 1, gpl, gps,
-	        mmd->flag & GP_OFFSET_INVERT_LAYER, mmd->flag & GP_OFFSET_INVERT_PASS))
+	if (!is_stroke_affected_by_modifier(
+	            ob,
+	            mmd->layername, mmd->pass_index, 3, gpl, gps,
+	            mmd->flag & GP_OPACITY_INVERT_LAYER, mmd->flag & GP_OPACITY_INVERT_PASS))
 	{
 		return;
 	}
 
-	for (int i = 0; i < gps->totpoints; i++) {
-		bGPDspoint *pt = &gps->points[i];
-		MDeformVert *dvert = &gps->dvert[i];
+	gp_style->fill_rgba[3]*= mmd->factor;
 
-		/* verify vertex group */
-		float weight = get_modifier_point_weight(dvert, (int)(!(mmd->flag & GP_OFFSET_INVERT_VGROUP) == 0), vindex);
-		if (weight < 0) {
-			continue;
+	/* if factor is > 1, then force opacity */
+	if (mmd->factor > 1.0f) {
+		gp_style->stroke_rgba[3] += mmd->factor - 1.0f;
+		if (gp_style->fill_rgba[3] > 1e-5) {
+			gp_style->fill_rgba[3] += mmd->factor - 1.0f;
 		}
-		/* calculate matrix */
-		mul_v3_v3fl(loc, mmd->loc, weight);
-		mul_v3_v3fl(rot, mmd->rot, weight);
-		mul_v3_v3fl(scale, mmd->scale, weight);
-		add_v3_fl(scale, 1.0);
-		loc_eul_size_to_mat4(mat, loc, rot, scale);
-
-		mul_m4_v3(mat, &pt->x);
 	}
+
+	CLAMP(gp_style->stroke_rgba[3], 0.0f, 1.0f);
+	CLAMP(gp_style->fill_rgba[3], 0.0f, 1.0f);
+
+	/* if opacity > 1.0, affect the strength of the stroke */
+	if (mmd->factor > 1.0f) {
+		for (int i = 0; i < gps->totpoints; i++) {
+			bGPDspoint *pt = &gps->points[i];
+			MDeformVert *dvert = &gps->dvert[i];
+
+			/* verify vertex group */
+			float weight = get_modifier_point_weight(dvert, (!(mmd->flag & GP_OPACITY_INVERT_VGROUP) == 0), vindex);
+			if (weight < 0) {
+				pt->strength += mmd->factor - 1.0f;
+			}
+			else {
+				pt->strength += (mmd->factor - 1.0f) * weight;
+			}
+			CLAMP(pt->strength, 0.0f, 1.0f);
+		}
+	}
+	else {
+		for (int i = 0; i < gps->totpoints; i++) {
+			bGPDspoint *pt = &gps->points[i];
+			MDeformVert *dvert = &gps->dvert[i];
+
+			/* verify vertex group */
+			if (mmd->vgname == NULL) {
+				pt->strength *= mmd->factor;
+			}
+			else {
+				float weight = get_modifier_point_weight(dvert, (!(mmd->flag & GP_OPACITY_INVERT_VGROUP) == 0), vindex);
+				if (weight >= 0) {
+					pt->strength *= mmd->factor * weight;
+				}
+			}
+			CLAMP(pt->strength, 0.0f, 1.0f);
+		}
+	}
+
 }
 
 static void gp_bakeModifier(
@@ -107,7 +137,7 @@ static void gp_bakeModifier(
         ModifierData *md, Object *ob)
 {
 	bGPdata *gpd = ob->data;
-
+	
 	for (bGPDlayer *gpl = gpd->layers.first; gpl; gpl = gpl->next) {
 		for (bGPDframe *gpf = gpl->frames.first; gpf; gpf = gpf->next) {
 			for (bGPDstroke *gps = gpf->strokes.first; gps; gps = gps->next) {
@@ -117,10 +147,10 @@ static void gp_bakeModifier(
 	}
 }
 
-ModifierTypeInfo modifierType_Gpencil_Offset = {
-	/* name */              "Offset",
-	/* structName */        "OffsetGreasePencilModifierData",
-	/* structSize */        sizeof(OffsetGreasePencilModifierData),
+ModifierTypeInfo modifierType_Gpencil_Opacity = {
+	/* name */              "Opacity",
+	/* structName */        "OpacityGreasePencilModifierData",
+	/* structSize */        sizeof(OpacityGreasePencilModifierData),
 	/* type */              eModifierTypeType_Gpencil,
 	/* flags */             eModifierTypeFlag_GpencilMod | eModifierTypeFlag_SupportsEditmode,
 
