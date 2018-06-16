@@ -709,8 +709,8 @@ bGPdata *BKE_gpencil_data_duplicate(Main *bmain, const bGPdata *gpd_src, bool in
 		gpd_dst = MEM_dupallocN(gpd_src);
 	}
 	else {
-		/* make a copy when others use this */
-		gpd_dst = BKE_libblock_copy(bmain, &gpd_src->id);
+		BLI_assert(bmain != NULL);
+		BKE_id_copy_ex(bmain, &gpd_src->id, (ID **)&gpd_dst, 0, false);
 		gpd_dst->runtime.batch_cache_data = NULL;
 	}
 	

@@ -45,6 +45,7 @@
 extern struct GPUUniformBuffer *globals_ubo; /* draw_common.c */
 extern struct GlobalsUboStorage ts; /* draw_common.c */
 
+extern char datatoc_edit_mesh_overlay_common_lib_glsl[];
 extern char datatoc_edit_mesh_overlay_frag_glsl[];
 extern char datatoc_edit_mesh_overlay_vert_glsl[];
 extern char datatoc_edit_mesh_overlay_geom_tri_glsl[];
@@ -139,8 +140,7 @@ typedef struct EDIT_MESH_PrivateData {
 static int EDIT_MESH_sh_index(ToolSettings *tsettings, RegionView3D *rv3d, bool supports_fast_mode)
 {
 	int result = tsettings->selectmode << 1;
-	if (supports_fast_mode)
-	{
+	if (supports_fast_mode) {
 		SET_FLAG_FROM_TEST(result, (rv3d->rflag & RV3D_NAVIGATING), 1 << 0);
 	}
 	return result;
@@ -154,31 +154,38 @@ static char *EDIT_MESH_sh_defines(ToolSettings *tsettings, RegionView3D *rv3d, b
 	char *str = NULL;
 	DynStr *ds = BLI_dynstr_new();
 
-	if (selectmode & SCE_SELECT_VERTEX)
-	{
+	if (selectmode & SCE_SELECT_VERTEX) {
 		BLI_dynstr_append(ds, "#define VERTEX_SELECTION\n");
 	}
 
-	if (selectmode & SCE_SELECT_EDGE)
-	{
+	if (selectmode & SCE_SELECT_EDGE) {
 		BLI_dynstr_append(ds, "#define EDGE_SELECTION\n");
 	}
 
-	if (selectmode & SCE_SELECT_FACE)
-	{
+	if (selectmode & SCE_SELECT_FACE) {
 		BLI_dynstr_append(ds, "#define FACE_SELECTION\n");
 	}
 
-	if (!fast_mode)
-	{
+	if (!fast_mode) {
 		BLI_dynstr_append(ds, "#define EDGE_FIX\n");
 	}
 
-	if (anti_alias)
-	{
+	if (anti_alias) {
 		BLI_dynstr_append(ds, "#define ANTI_ALIASING\n");
 	}
 	BLI_dynstr_append(ds, "#define VERTEX_FACING\n");
+
+	str = BLI_dynstr_get_cstring(ds);
+	BLI_dynstr_free(ds);
+	return str;
+}
+static char *EDIT_MESH_sh_lib(void)
+{
+	char *str = NULL;
+	DynStr *ds = BLI_dynstr_new();
+
+	BLI_dynstr_append(ds, datatoc_common_globals_lib_glsl);
+	BLI_dynstr_append(ds, datatoc_edit_mesh_overlay_common_lib_glsl);
 
 	str = BLI_dynstr_get_cstring(ds);
 	BLI_dynstr_free(ds);
@@ -188,31 +195,32 @@ static char *EDIT_MESH_sh_defines(ToolSettings *tsettings, RegionView3D *rv3d, b
 static GPUShader *EDIT_MESH_ensure_shader(ToolSettings *tsettings, RegionView3D *rv3d, bool fast_mode, bool looseedge)
 {
 	const int index = EDIT_MESH_sh_index(tsettings, rv3d, fast_mode);
-	if (looseedge)
-	{
-		if (!e_data.overlay_loose_edge_sh_cache[index])
-		{
+	if (looseedge) {
+		if (!e_data.overlay_loose_edge_sh_cache[index]) {
 			char *defines = EDIT_MESH_sh_defines(tsettings, rv3d, true);
+			char *lib = EDIT_MESH_sh_lib();
 			e_data.overlay_loose_edge_sh_cache[index] = DRW_shader_create_with_lib(
 			        datatoc_edit_mesh_overlay_vert_glsl,
 			        datatoc_edit_mesh_overlay_geom_edge_glsl,
 			        datatoc_edit_mesh_overlay_frag_glsl,
-			        datatoc_common_globals_lib_glsl,
+			        lib,
 			        defines);
+			MEM_freeN(lib);
 			MEM_freeN(defines);
 		}
 		return e_data.overlay_loose_edge_sh_cache[index];
 	}
 	else {
-		if (!e_data.overlay_tri_sh_cache[index])
-		{
+		if (!e_data.overlay_tri_sh_cache[index]) {
 			char *defines = EDIT_MESH_sh_defines(tsettings, rv3d, true);
+			char *lib = EDIT_MESH_sh_lib();
 			e_data.overlay_tri_sh_cache[index] = DRW_shader_create_with_lib(
 			        datatoc_edit_mesh_overlay_vert_glsl,
 			        datatoc_edit_mesh_overlay_geom_tri_glsl,
 			        datatoc_edit_mesh_overlay_frag_glsl,
-			        datatoc_common_globals_lib_glsl,
+			        lib,
 			        defines);
+			MEM_freeN(lib);
 			MEM_freeN(defines);
 		}
 		return e_data.overlay_tri_sh_cache[index];
@@ -241,11 +249,13 @@ static void EDIT_MESH_engine_init(void *vedata)
 	}
 
 	if (!e_data.overlay_vert_sh) {
+		char *lib = EDIT_MESH_sh_lib();
 		e_data.overlay_vert_sh = DRW_shader_create_with_lib(
 		        datatoc_edit_mesh_overlay_loosevert_vert_glsl, NULL,
 		        datatoc_edit_mesh_overlay_frag_glsl,
-		        datatoc_common_globals_lib_glsl,
+		        lib,
 		        "#define VERTEX_SELECTION\n");
+		MEM_freeN(lib);
 	}
 	if (!e_data.overlay_facedot_sh) {
 		e_data.overlay_facedot_sh = DRW_shader_create_with_lib(
@@ -578,8 +588,7 @@ static void EDIT_MESH_engine_free(void)
 	DRW_SHADER_FREE_SAFE(e_data.normals_face_sh);
 	DRW_SHADER_FREE_SAFE(e_data.normals_sh);
 
-	for (int i = 0; i < MAX_SHADERS; i++)
-	{
+	for (int i = 0; i < MAX_SHADERS; i++) {
 		DRW_SHADER_FREE_SAFE(e_data.overlay_tri_sh_cache[i]);
 		DRW_SHADER_FREE_SAFE(e_data.overlay_loose_edge_sh_cache[i]);
 	}

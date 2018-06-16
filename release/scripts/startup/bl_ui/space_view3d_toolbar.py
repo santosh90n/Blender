@@ -1356,7 +1356,6 @@ class VIEW3D_PT_tools_particlemode(View3DPanel, Panel):
 # Grease Pencil drawing brushes
 class VIEW3D_PT_tools_grease_pencil_brush(View3DPanel, Panel):
     bl_context = ".greasepencil_paint"
-    bl_category = "Tools"
     bl_label = "Drawing Brushes"
 
     @classmethod
@@ -1374,6 +1373,8 @@ class VIEW3D_PT_tools_grease_pencil_brush(View3DPanel, Panel):
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+
         ts = context.scene.tool_settings
         settings = ts.gpencil_paint
 
@@ -1407,7 +1408,6 @@ class VIEW3D_PT_tools_grease_pencil_brush(View3DPanel, Panel):
                 col.prop(brush, "size", text="Thickness")
                 col.prop(gp_settings, "gpencil_fill_simplyfy_level", text="Simplify")
 
-
                 col = layout.row(align=True)
                 col.template_ID(gp_settings, "material")
 
@@ -1434,22 +1434,18 @@ class VIEW3D_PT_tools_grease_pencil_brush(View3DPanel, Panel):
                 row = layout.row(align=True)
                 row.template_ID(gp_settings, "material")
 
-            if gp_settings.gpencil_brush_type != 'ERASE':
-                layout.separator()
-                layout.prop(context.tool_settings, "use_gpencil_draw_onback", text="Draw on Back")
-
-
 
 # Grease Pencil drawing brushes options
 class VIEW3D_PT_tools_grease_pencil_brush_option(View3DPanel, Panel):
     bl_context = ".greasepencil_paint"
-    bl_category = "Tools"
     bl_label = "Options"
     bl_options = {'DEFAULT_CLOSED'}
 
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+
         brush = context.active_gpencil_brush
         gp_settings = brush.gpencil_settings
 
@@ -1461,61 +1457,124 @@ class VIEW3D_PT_tools_grease_pencil_brush_option(View3DPanel, Panel):
             col.prop(gp_settings, "active_smooth_factor")
             col.separator()
 
-            row = col.row(align=True)
-            row.prop(gp_settings, "angle", slider=True)
-            row.prop(gp_settings, "angle_factor", text="Factor", slider=True)
+            col.prop(gp_settings, "angle", slider=True)
+            col.prop(gp_settings, "angle_factor", text="Factor", slider=True)
             col.separator()
 
-            if gp_settings.gpencil_brush_type == 'DRAW':
-                col.prop(gp_settings, "use_stabilizer", text="Stabilizer")
-                if gp_settings.use_stabilizer:
-                    col.separator()
-                    col.prop(brush, "smooth_stroke_radius", text="Radius", slider=True)
-                    col.prop(brush, "smooth_stroke_factor", text="Factor", slider=True)
-                    col.separator()
 
-            col.prop(gp_settings, "enable_random", text="Random Settings")
-            if gp_settings.enable_random is True:
-                col.label(text="Settings:")
-                col.prop(gp_settings, "random_pressure", text="Pressure", slider=True)
-                col.separator()
+class VIEW3D_PT_tools_grease_pencil_brush_stabilizer(View3DPanel, Panel):
+    bl_context = ".greasepencil_paint"
+    bl_parent_id = 'VIEW3D_PT_tools_grease_pencil_brush_option'
+    bl_label = "Stabilizer"
+    bl_options = {'DEFAULT_CLOSED'}
 
-                col.prop(gp_settings, "random_strength", text="Strength", slider=True)
-                col.separator()
+    @classmethod
+    def poll(cls, context):
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
 
-                col.prop(gp_settings, "uv_random", text="UV", slider=True)
-                col.separator()
+        return brush is not None and gp_settings.gpencil_brush_type == 'DRAW'
 
-                row = col.row(align=True)
-                row.prop(gp_settings, "pen_jitter", slider=True)
-                row.prop(gp_settings, "use_jitter_pressure", text="", icon='STYLUS_PRESSURE')
-                col.separator()
+    def draw_header(self, context):
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
+        self.layout.prop(gp_settings, "use_stabilizer", text="")
 
-            col.prop(gp_settings, "enable_settings", text="Post-processing Settings")
-            if gp_settings.enable_settings is True:
-                col.label(text="Stroke Quality:")
-                col.prop(gp_settings, "pen_smooth_factor")
-                col.prop(gp_settings, "pen_smooth_steps")
+    @staticmethod
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
 
-                col.label(text="Thickness:")
-                col.prop(gp_settings, "pen_thick_smooth_factor")
-                col.prop(gp_settings, "pen_thick_smooth_steps")
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
+        layout.active = gp_settings.use_stabilizer
 
-                col.label(text="Subdivide:")
-                col.prop(gp_settings, "pen_subdivision_steps")
-                col.prop(gp_settings, "random_subdiv", text="Randomness", slider=True)
+        layout.prop(brush, "smooth_stroke_radius", text="Radius", slider=True)
+        layout.prop(brush, "smooth_stroke_factor", text="Factor", slider=True)
+
+
+class VIEW3D_PT_tools_grease_pencil_brush_settings(View3DPanel, Panel):
+    bl_context = ".greasepencil_paint"
+    bl_parent_id = 'VIEW3D_PT_tools_grease_pencil_brush_option'
+    bl_label = "Post-processing Settings"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        brush = context.active_gpencil_brush
+
+        return brush is not None
+
+    def draw_header(self, context):
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
+        self.layout.prop(gp_settings, "enable_settings", text="")
+
+    @staticmethod
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
+        layout.active = gp_settings.enable_settings
+
+        layout.prop(gp_settings, "pen_smooth_factor")
+        layout.prop(gp_settings, "pen_smooth_steps")
+
+        layout.prop(gp_settings, "pen_thick_smooth_factor")
+        layout.prop(gp_settings, "pen_thick_smooth_steps")
+
+        layout.prop(gp_settings, "pen_subdivision_steps")
+        layout.prop(gp_settings, "random_subdiv", text="Randomness", slider=True)
+
+
+class VIEW3D_PT_tools_grease_pencil_brush_random(View3DPanel, Panel):
+    bl_context = ".greasepencil_paint"
+    bl_parent_id = 'VIEW3D_PT_tools_grease_pencil_brush_option'
+    bl_label = "Random Settings"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        brush = context.active_gpencil_brush
+
+        return brush is not None
+
+    def draw_header(self, context):
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
+        self.layout.prop(gp_settings, "enable_random", text="")
+
+    @staticmethod
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        brush = context.active_gpencil_brush
+        gp_settings = brush.gpencil_settings
+        layout.active = gp_settings.enable_random
+
+        layout.prop(gp_settings, "random_pressure", text="Pressure", slider=True)
+        layout.prop(gp_settings, "random_strength", text="Strength", slider=True)
+        layout.prop(gp_settings, "uv_random", text="UV", slider=True)
+
+        row = layout.row(align=True)
+        row.prop(gp_settings, "pen_jitter", slider=True)
+        row.prop(gp_settings, "use_jitter_pressure", text="", icon='STYLUS_PRESSURE')
 
 
 # Grease Pencil drawingcurves
 class VIEW3D_PT_tools_grease_pencil_brushcurves(View3DPanel, Panel):
     bl_context = ".greasepencil_paint"
-    bl_category = "Tools"
     bl_label = "Brush Curves"
     bl_options = {'DEFAULT_CLOSED'}
 
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+
         brush = context.active_gpencil_brush
         gp_settings = brush.gpencil_settings
 
@@ -1545,6 +1604,7 @@ class VIEW3D_PT_tools_grease_pencil_shapes(Panel):
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
 
         col = layout.column(align=True)
         col.operator("gpencil.primitive", text="Line", icon='IPO_CONSTANT').type = 'LINE'
@@ -1623,6 +1683,8 @@ class VIEW3D_PT_tools_grease_pencil_weight_paint(View3DPanel, Panel):
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+
         gpd = context.gpencil_data
         settings = context.tool_settings.gpencil_sculpt
         tool = settings.tool
@@ -1659,6 +1721,8 @@ class VIEW3D_PT_tools_grease_pencil_weight_tools(Panel):
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+
         col = layout.column()
         col.operator("gpencil.vertex_group_invert", text="Invert")
         col.operator("gpencil.vertex_group_smooth", text="Smooth")
@@ -1667,19 +1731,16 @@ class VIEW3D_PT_tools_grease_pencil_weight_tools(Panel):
 # Grease Pencil Brush Appeareance (one for each mode)
 class VIEW3D_PT_tools_grease_pencil_paint_appearance(GreasePencilAppearancePanel, View3DPanel, Panel):
     bl_context = ".greasepencil_paint"
-    bl_category = "Tools"
     bl_label = "Brush Appearance"
 
 
 class VIEW3D_PT_tools_grease_pencil_sculpt_appearance(GreasePencilAppearancePanel, View3DPanel, Panel):
     bl_context = ".greasepencil_sculpt"
-    bl_category = "Tools"
     bl_label = "Brush Appearance"
 
 
 class VIEW3D_PT_tools_grease_pencil_weight_appearance(GreasePencilAppearancePanel, View3DPanel, Panel):
     bl_context = ".greasepencil_weight"
-    bl_category = "Tools"
     bl_label = "Brush Appearance"
 
 # Grease Pencil Animation Tools
@@ -1723,6 +1784,9 @@ classes = (
     # some panels have been moved to toolbar already
     VIEW3D_PT_tools_grease_pencil_brush,
     VIEW3D_PT_tools_grease_pencil_brush_option,
+    VIEW3D_PT_tools_grease_pencil_brush_settings,
+    VIEW3D_PT_tools_grease_pencil_brush_stabilizer,
+    VIEW3D_PT_tools_grease_pencil_brush_random,
     VIEW3D_PT_tools_grease_pencil_brushcurves,
     VIEW3D_PT_tools_grease_pencil_shapes,
     VIEW3D_PT_tools_grease_pencil_edit,

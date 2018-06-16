@@ -246,47 +246,48 @@ class GreasePencilStrokeSculptPanel:
     bl_label = "Sculpt Strokes"
     bl_category = "Tools"
 
+    @classmethod
+    def get_icon(cls, brush, direction):
+        if brush.direction == direction:
+            return 'CHECKBOX_HLT'
+        else:
+            return 'CHECKBOX_DEHLT'
+
     @staticmethod
     def draw(self, context):
         layout = self.layout
-        gpd = context.gpencil_data
+        layout.use_property_split = True
+
         settings = context.tool_settings.gpencil_sculpt
         tool = settings.tool
         brush = settings.brush
 
         layout.template_icon_view(settings, "tool", show_labels=True)
 
-        col = layout.column()
-        col.prop(brush, "size", slider=True)
-        row = col.row(align=True)
+        layout.prop(brush, "size", slider=True)
+        row = layout.row(align=True)
         row.prop(brush, "strength", slider=True)
         row.prop(brush, "use_pressure_strength", text="")
-        col.prop(brush, "use_falloff")
+        layout.prop(brush, "use_falloff")
 
         if tool in {'SMOOTH', 'RANDOMIZE'}:
-            row = layout.row(align=True)
-            row.prop(settings, "affect_position", text="Position", icon='MESH_DATA', toggle=True)
-            row.prop(settings, "affect_strength", text="Strength", icon='COLOR', toggle=True)
-            row.prop(settings, "affect_thickness", text="Thickness", icon='LINE_DATA', toggle=True)
-            row.prop(settings, "affect_uv", text="UV", icon='MOD_UVPROJECT', toggle=True)
-
-        layout.separator()
+            layout.prop(settings, "affect_position", text="Position", icon='MESH_DATA', toggle=True)
+            layout.prop(settings, "affect_strength", text="Strength", icon='COLOR', toggle=True)
+            layout.prop(settings, "affect_thickness", text="Thickness", icon='LINE_DATA', toggle=True)
+            layout.prop(settings, "affect_uv", text="UV", icon='MOD_UVPROJECT', toggle=True)
 
         if tool == 'THICKNESS':
-            layout.row().prop(brush, "direction", expand=True)
+            layout.prop_enum(brush, "direction", 'ADD', text="Increase", icon=self.get_icon(brush, 'ADD'))
+            layout.prop_enum(brush, "direction", 'SUBTRACT', text="Decrease", icon=self.get_icon(brush, 'SUBTRACT'))
         elif tool == 'PINCH':
-            row = layout.row(align=True)
-            row.prop_enum(brush, "direction", 'ADD', text="Pinch")
-            row.prop_enum(brush, "direction", 'SUBTRACT', text="Inflate")
+            layout.prop_enum(brush, "direction", 'ADD', text="Pinch", icon=self.get_icon(brush, 'ADD'))
+            layout.prop_enum(brush, "direction", 'SUBTRACT', text="Inflate", icon=self.get_icon(brush, 'SUBTRACT'))
         elif settings.tool == 'TWIST':
-            row = layout.row(align=True)
-            row.prop_enum(brush, "direction", 'SUBTRACT', text="CW")
-            row.prop_enum(brush, "direction", 'ADD', text="CCW")
+            layout.prop_enum(brush, "direction", 'SUBTRACT', text="Clockwise", icon=self.get_icon(brush, 'SUBTRACT'))
+            layout.prop_enum(brush, "direction", 'ADD', text="Counterclockwise", icon=self.get_icon(brush, 'ADD'))
 
-        row = layout.row(align=True)
-        row.prop(settings, "use_select_mask")
-        row = layout.row(align=True)
-        row.prop(settings, "selection_alpha", slider=True)
+        layout.prop(settings, "use_select_mask")
+        layout.prop(settings, "selection_alpha", slider=True)
 
         if tool == 'SMOOTH':
             layout.prop(brush, "affect_pressure")
@@ -294,52 +295,34 @@ class GreasePencilStrokeSculptPanel:
 
 class GreasePencilAppearancePanel:
     bl_label = "Brush Appearance"
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-        # if context.gpencil_data is None:
-        #     return False
-        #
-        # workspace = context.workspace
-        # if context.active_object:
-        #     brush = context.active_gpencil_brush
-        #     return context.active_object.mode in {'GPENCIL_PAINT', 'GPENCIL_SCULPT', 'GPENCIL_WEIGHT'}
-        #
-        # return False
+    bl_options = {'DEFAULT_CLOSED'}
 
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+
         workspace = context.workspace
 
         if context.active_object.mode == 'GPENCIL_PAINT':
             brush = context.active_gpencil_brush
             gp_settings = brush.gpencil_settings
 
-            col = layout.column(align=True)
-            col.label("Brush Type:")
-            col.prop(gp_settings, "gpencil_brush_type", text="")
+            layout.prop(gp_settings, "gpencil_brush_type", text="Brush Type")
 
-            col = layout.column(align=True)
-            col.label("Icon:")
-            sub = col.column(align=True)
+            sub = layout.column(align=True)
             sub.enabled = not brush.use_custom_icon
-            sub.prop(gp_settings, "gp_icon", text="")
+            sub.prop(gp_settings, "gp_icon", text="Icon")
 
-            col.separator()
-            col.prop(brush, "use_custom_icon")
-            sub = col.column()
+            layout.prop(brush, "use_custom_icon")
+            sub = layout.column()
             sub.active = brush.use_custom_icon
             sub.prop(brush, "icon_filepath", text="")
 
-            col = layout.column(align=True)
-            col.prop(gp_settings, "use_cursor", text="Show Brush")
+            layout.prop(gp_settings, "use_cursor", text="Show Brush")
 
             if gp_settings.gpencil_brush_type == 'FILL':
-                row = col.row(align=True)
-                row.prop(brush, "cursor_color_add", text="Color")
+                layout.prop(brush, "cursor_color_add", text="Color")
 
         elif context.active_object.mode in ('GPENCIL_SCULPT', 'GPENCIL_WEIGHT'):
             settings = context.tool_settings.gpencil_sculpt
@@ -349,6 +332,7 @@ class GreasePencilAppearancePanel:
             col.prop(brush, "use_cursor", text="Show Brush")
             col.row().prop(brush, "cursor_color_add", text="Add")
             col.row().prop(brush, "cursor_color_sub", text="Subtract")
+
 
 class GreasePencilAnimationPanel:
     bl_label = "Animation"
@@ -365,6 +349,7 @@ class GreasePencilAnimationPanel:
     @staticmethod
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
 
         col = layout.column(align=True)
         col.operator("gpencil.blank_frame_add", icon='NEW')

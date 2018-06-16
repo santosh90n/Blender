@@ -76,21 +76,7 @@ class VIEW3D_HT_header(Header):
         # Grease Pencil
         # GPXX this is a hack while we merge to keep all running
         if context.active_object and context.gpencil_data and context.active_object.type == 'GPENCIL':
-            ob = context.active_object
             gpd = context.gpencil_data
-
-            if gpd.is_stroke_paint_mode:
-                layout.popover_group(space_type='PROPERTIES', region_type='WINDOW', context=".greasepencil_paint",
-                                 category="")
-            elif gpd.use_stroke_edit_mode:
-                layout.popover_group(space_type='PROPERTIES', region_type='WINDOW', context=".greasepencil_edit",
-                                 category="")
-            elif gpd.is_stroke_sculpt_mode:
-                layout.popover_group(space_type='PROPERTIES', region_type='WINDOW', context=".greasepencil_sculpt",
-                                 category="")
-            elif gpd.is_stroke_weight_mode:
-                layout.popover_group(space_type='PROPERTIES', region_type='WINDOW', context=".greasepencil_weight",
-                                 category="")
 
             if gpd.is_stroke_paint_mode:
                 row = layout.row()
@@ -100,6 +86,12 @@ class VIEW3D_HT_header(Header):
 
                 if tool_settings.gpencil_stroke_placement_view3d in ('SURFACE', 'STROKE'):
                     row.prop(tool_settings, "use_gpencil_stroke_endpoints")
+
+                brush = context.active_gpencil_brush
+                if brush is not None:
+                    gp_settings = brush.gpencil_settings
+                    if gp_settings.gpencil_brush_type != 'ERASE':
+                        row.prop(context.tool_settings, "use_gpencil_draw_onback", text="", icon='ORTHO')
 
             if gpd.use_stroke_edit_mode or gpd.is_stroke_sculpt_mode or gpd.is_stroke_weight_mode:
                 row = layout.row(align=True)
@@ -3718,6 +3710,9 @@ class VIEW3D_PT_shading(Panel):
                 sub.prop(shading, "object_outline_color", text="")
 
                 col.prop(view, "show_world")
+                row = col.split(0.4)
+                row.active = not shading.show_xray
+                row.prop(shading, "show_anti_aliasing")
 
         elif shading.type in ('MATERIAL'):
             row = col.row()
